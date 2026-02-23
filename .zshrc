@@ -21,6 +21,11 @@ if [[ "$OS" == "macos" ]]; then
   fi
 fi
 
+# Ensure ~/.local/bin is in PATH (needed on Linux for kitty, etc.)
+if [[ "$OS" == "linux" ]]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -36,21 +41,28 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Add in Powerlevel10k
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
-# Add in zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
+# zsh-completions must load before compinit
 zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
 
-# Add in snippets
-zinit snippet OMZP::git
-zinit snippet OMZP::sudo
-zinit snippet OMZP::command-not-found
-
-# Load completions
-autoload -Uz compinit && compinit
+# Load completions (with 24h cache to speed up startup)
+autoload -Uz compinit
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 zinit cdreplay -q
+
+# Defer non-critical plugins until after prompt appears
+zinit wait lucid light zsh-users/zsh-syntax-highlighting
+zinit wait lucid light zsh-users/zsh-autosuggestions
+zinit wait lucid light Aloxaf/fzf-tab
+
+# Add in snippets
+zinit wait lucid snippet OMZP::git
+zinit wait lucid snippet OMZP::sudo
+zinit wait lucid snippet OMZP::command-not-found
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -64,7 +76,6 @@ bindkey '^n' history-search-forward
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
-HISTDUP=erase
 setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
@@ -84,6 +95,10 @@ else
   zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
   zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 fi
+
+# Environment
+export EDITOR="nvim"
+export VISUAL="nvim"
 
 # Aliases
 alias vim='nvim'
