@@ -27,10 +27,10 @@ See [`setup/README.md`](setup/README.md) for details.
 
 ## Symlinks
 
-Link the configs into place after cloning:
+Run the install script after cloning:
 
 ```bash
-ln -sf ~/dotfiles/.zshrc ~/.zshrc
-ln -sf ~/dotfiles/nvim ~/.config/nvim
-ln -sf ~/dotfiles/kitty ~/.config/kitty
+./install.sh
 ```
+
+This symlinks `.zshrc`, `nvim/`, and `kitty/` into the correct locations. If `.p10k.zsh` is present in the repo it will be linked too — otherwise run `p10k configure` to generate it, then commit the result.
