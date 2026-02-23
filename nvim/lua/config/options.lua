@@ -9,4 +9,8 @@ opt.cmdheight = 0
 
 vim.g.root_spec = { "cwd" }
 vim.g.omni_sql_no_default_maps = 1
-vim.g.python3_host_prog = "/opt/homebrew/bin/python3"
+-- Find python3 dynamically across platforms
+local python3 = vim.fn.exepath("python3")
+if python3 ~= "" then
+  vim.g.python3_host_prog = python3
+end

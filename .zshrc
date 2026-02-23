@@ -5,9 +5,20 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # If you're using macOS, you'll want this enabled
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+# Detect OS
+case "$OSTYPE" in
+  darwin*) OS="macos" ;;
+  linux*)  OS="linux" ;;
+  *)       OS="unknown" ;;
+esac
+
+# Homebrew (macOS - Apple Silicon or Intel)
+if [[ "$OS" == "macos" ]]; then
+  if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -f "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
 fi
 
 # Set the directory we want to store zinit and plugins
@@ -66,17 +77,30 @@ setopt hist_find_no_dups
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+if [[ "$OS" == "macos" ]]; then
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -G $realpath'
+  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls -G $realpath'
+else
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+  zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+fi
 
 # Aliases
-alias ls='ls --color'
 alias vim='nvim'
 alias c='clear'
-alias la='ls -a --color'
-alias ll='ls -l --color'
-alias lla='ls -la --color'
 alias neofetch='fastfetch'
+
+if [[ "$OS" == "macos" ]]; then
+  alias ls='ls -G'
+  alias la='ls -Ga'
+  alias ll='ls -Gl'
+  alias lla='ls -Gla'
+else
+  alias ls='ls --color'
+  alias la='ls -a --color'
+  alias ll='ls -l --color'
+  alias lla='ls -la --color'
+fi
 
 # Shell integrations
 eval "$(fzf --zsh)"
