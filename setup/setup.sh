@@ -89,11 +89,10 @@ fi
 if selected nerd-fonts; then
   fonts=("Meslo" "FiraCode" "FiraMono" "JetBrainsMono")
   fontpath="$HOME/.local/share/fonts"
-  version="3.4.0"
 
   mkdir -p "$fontpath"
   for font in "${fonts[@]}"; do
-    wget -q --show-progress https://github.com/ryanoasis/nerd-fonts/releases/download/v"$version"/"$font".zip -P /tmp
+    curl -L https://github.com/ryanoasis/nerd-fonts/releases/latest/download/"$font".zip -o /tmp/"$font".zip
     unzip -q /tmp/"$font".zip -d "$fontpath"
     rm "$fontpath"/*Windows*
     rm /tmp/"$font".zip
@@ -114,7 +113,7 @@ fi
 
 # ── Cursor ─────────────────────────────────────────────────────────────────────
 if selected cursor; then
-  curl -L "https://api2.cursor.sh/updates/download/golden/linux-x64-rpm/cursor/2.5" -o /tmp/cursor.rpm
+  curl -L "https://api2.cursor.sh/updates/download/golden/linux-x64-rpm/cursor/latest" -o /tmp/cursor.rpm
   sudo dnf install -y /tmp/cursor.rpm
   rm /tmp/cursor.rpm
 fi
