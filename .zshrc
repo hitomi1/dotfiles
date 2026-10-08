@@ -55,14 +55,14 @@ fi
 zinit cdreplay -q
 
 # Defer non-critical plugins until after prompt appears
-zinit wait lucid light zsh-users/zsh-syntax-highlighting
-zinit wait lucid light zsh-users/zsh-autosuggestions
-zinit wait lucid light Aloxaf/fzf-tab
+zinit load zdharma/fast-syntax-highlighting
+zinit load zsh-users/zsh-autosuggestions
+zinit load Aloxaf/fzf-tab
 
 # Add in snippets
-zinit wait lucid snippet OMZP::git
-zinit wait lucid snippet OMZP::sudo
-zinit wait lucid snippet OMZP::command-not-found
+zinit snippet OMZP::git
+zinit snippet OMZP::sudo
+zinit snippet OMZP::command-not-found
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -120,3 +120,12 @@ fi
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
+export PATH="$HOME/.local/bin:$PATH"
+
+# Claude Code without permission prompts
+alias claude-yolo='claude --dangerously-skip-permissions'
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/hitomi/.lmstudio/bin"
+# End of LM Studio CLI section
+
